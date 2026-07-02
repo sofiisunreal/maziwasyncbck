@@ -90,4 +90,63 @@ class MilkCollection(BaseModel):
 
     def __str__(self):
         return f"{self.collection_date}: {self.farmer.first_name}-{self.litres}"
+    def save(self,*args , **kwargs):
+        self.total_amount=self.litres*self.price_per_litre
+        super().save(*args,**kwargs)
+
+# Feedback 
+class Feedback(BaseModel):
+    STATUS_CHOICES=[
+        ('PENDING','Pending'),
+        ('RESOLVED','Resolved'),
+        ('REJECTED','Rejected')
+    ]
+    farmer=models.ForeignKey(FarmerProfile,on_delete=models.CASCADE,related_name='feedbacks')
+    title=models.CharField(max_length=100)
+    description=models.TextField()
+    status=models.CharField(max_length=10,choices=STATUS_CHOICES)
+    resolved_by=models.ForeignKey(User,on_delete=models.SET_NULL,null=True , blank=True)
+
+    def __str__(self):
+        return self.title
+    
+# Notices
+class Notice(BaseModel):
+    TARGET_CHOICES=[
+        ('ALL','ALL Users'),
+        ('FARMERS','Farmers only'),
+        ('PORTERS','Porters only')
+    ]
+    title=models.CharField(max_length=200)
+    message=models.TextField()
+    target=models.CharField(max_length=50,choices=TARGET_CHOICES)
+    created_by=models.ForeignKey(User,on_delete=models.CASCADE)
+    is_important=models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.title
+    
+# Payments
+class Payment(BaseModel):
+    STATUS_CHOICES=[
+        ('PENDING','Pending'),
+        ('COMPLETED','Completed'),
+        ('FAILED','Failed')
+    ]
+    METHOD_CHOICES=[
+        ('MPESA','M-Pesa'),
+        ('CASH','Cash')
+    ]
+    farmer=models.ForeignKey(FarmerProfile,on_delete=models.CASCADE)
+    amount=models.DecimalField(max_digits=12,decimal_places=2)
+    payment_method=models.CharField(choices=METHOD_CHOICES)
+    status=models.CharField(choices=STATUS_CHOICES, default='PENDING')
+    originator_conversation_id=models.CharField(max_length=100,unique=True,blank=True,null=True)
+    transaction_ref=models.CharField(max_length=100,unique=True)
+    payment_date=models.DateTimeField()
+
+    def __str__(self):
+        return f'{self.transaction_ref}-KES {self.amount} '
+
+
 
