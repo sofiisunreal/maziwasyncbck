@@ -29,7 +29,7 @@ class FarmerProfile(BaseModel):
     national_id=models.CharField(max_length=15,unique=True)
     first_name=models.CharField(max_length=100)
     last_name=models.CharField(max_length=100)
-    date_of_birth=models.DateField(max_length=10)
+    date_of_birth=models.DateField(max_length=10,null=True,blank=True)
     gender=models.CharField(max_length=10, choices=[('MALE','Male'),('FEMALE','Female')])
 
     # contact info 
@@ -39,7 +39,7 @@ class FarmerProfile(BaseModel):
 
     # farmer info 
     farm_name=models.CharField(max_length=200,blank=True,null=True)
-    farm_size_acres=models.DecimalField(max_length=200,blank=True,null=True,decimal_places=2)
+    farm_size_acres=models.DecimalField( max_digits=2,blank=True,null=True,decimal_places=2)
     number_of_Cows=models.IntegerField(default=0)
     membership_number=models.CharField(max_length=50,blank=True,null=True)
     join_date=models.DateField(auto_now_add=True)
@@ -65,7 +65,7 @@ class PorterProfile(BaseModel):
     first_name=models.CharField(max_length=100)
     last_name=models.CharField(max_length=100)
     route_name=models.CharField(max_length=200)
-    assigned_farmers=models.ManyToManyField(FarmerProfile,related_name='assigned_porters',blank=True,null=True)
+    assigned_farmers=models.ManyToManyField(FarmerProfile,related_name='assigned_porters',blank=True)
     hire_date=models.DateField(auto_now_add=True)
     is_active=models.BooleanField(default=True)
     total_collections=models.IntegerField(default=0)
@@ -139,8 +139,8 @@ class Payment(BaseModel):
     ]
     farmer=models.ForeignKey(FarmerProfile,on_delete=models.CASCADE)
     amount=models.DecimalField(max_digits=12,decimal_places=2)
-    payment_method=models.CharField(choices=METHOD_CHOICES)
-    status=models.CharField(choices=STATUS_CHOICES, default='PENDING')
+    payment_method=models.CharField(max_length=100,choices=METHOD_CHOICES)
+    status=models.CharField(max_length=100,choices=STATUS_CHOICES, default='PENDING')
     originator_conversation_id=models.CharField(max_length=100,unique=True,blank=True,null=True)
     transaction_ref=models.CharField(max_length=100,unique=True)
     payment_date=models.DateTimeField()

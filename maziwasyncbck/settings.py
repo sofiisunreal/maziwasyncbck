@@ -27,6 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+AUTH_USER_MODEL='core.User'
 
 # Application definition
 
@@ -45,9 +46,10 @@ INSTALLED_APPS = [
     'farmer',
 
     # third party 
-    'rest-framework',
-    'rest-framework_simplejwt.tokenblacklist',
-    'drf-spectacular',
+    'rest_framework',
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
+    'drf_spectacular',
     'corsheaders',
 
 
@@ -99,9 +101,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'maziwasyncbckdb',
-        'HOST':'localhost',
+        'HOST':'127.0.0.1',
         'USER':'root',
-        'PASSWORD':''
+        'PASSWORD':'',
+        'PORT':'3306'
     }
 }
 
@@ -147,3 +150,15 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# REST FRAMEWORK
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
