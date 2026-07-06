@@ -1,10 +1,11 @@
 from django.db import IntegrityError, transaction
 from django.shortcuts import render
 from rest_framework.decorators import api_view,permission_classes
-from rest_framework.permissions import AllowAny,IsAdminUser
+from rest_framework.permissions import AllowAny,IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.authentication import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.exceptions import TokenError
 from core.models import *
 
 # Create your views here.
@@ -92,4 +93,54 @@ def Login(request):
         "access_token": str(refresh.access_token)
     })
 
+
+
+# ============================================================
+# get user profile of logged in user
+# ============================================================
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def MyProfile(request):
+    user=request.user 
+    print(user)
+    profile_data={}
+    if user.role=='farmer' and hasattr(user,'farmer_profile'):
+        p=user.farmer_profile
+        profile_data={
+            'first_name':p.first_name,
+            'last_name':p.last_name,
+            'phone_number':p.phone_number,
+            'farm_name':p.farm_name
+        }
+    elif user.role=='porter' and hasattr(user,'porter_profile'):
+        p=user.porter_profile
+        profile_data={
+            'first_name':p.first_name,
+            'last_name':p.last_name,
+            'employee_id':p.employee_id,
+            'route_name':p.route_name
+        }
+    return Response({
+        'id':user.id,# ============================================================
+
+        'username':user.username,
+        'role':user.role,
+        'profile':profile_data,
+    })
+
+# ============================================================
+# logout 
+# ============================================================
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def Logout(request):
+    try:
+        refresh_token=request.data.get("refresh")
+        token=RefreshToken(refresh_token)
+        token.blacklist()
+    except TokenError:
+        return Response({"message": "Invalid or expired token"})
+    except Exception as e:
+        return Response({"error":str(e)})
 

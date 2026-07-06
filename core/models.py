@@ -65,6 +65,8 @@ class PorterProfile(BaseModel):
     first_name=models.CharField(max_length=100)
     last_name=models.CharField(max_length=100)
     route_name=models.CharField(max_length=200)
+    phone_number=models.CharField(max_length=15,unique=True,null=True)
+
     assigned_farmers=models.ManyToManyField(FarmerProfile,related_name='assigned_porters',blank=True)
     hire_date=models.DateField(auto_now_add=True)
     is_active=models.BooleanField(default=True)
