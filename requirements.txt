@@ -1,6 +1,10 @@
+Django>=5.2
 djangorestframework
-django-cors-headers
-mysqlclient
-djangorestframework-simplejwt
-drf-spectacular
+python-dotenv
 Pillow
+psycopg2-binary
+django-cors-headers
+djangorestframework-simplejwt
+gunicorn
+whitenoise
+drf_spectacular
