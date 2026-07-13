@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from core.models import FarmerProfile, PorterProfile
+from core.models import FarmerProfile, Notice, PorterProfile
 
 # admin/cooperative farmer account 
 class FarmerSerializer(serializers.ModelSerializer):
@@ -13,4 +13,9 @@ class PorterSerializer(serializers.ModelSerializer):
         model=PorterProfile
         fields='__all__'
 
+class NoticeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Notice 
+        fields='__all__'
+        read_only_fields=["created_by"]
         

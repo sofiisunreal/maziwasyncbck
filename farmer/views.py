@@ -1,5 +1,6 @@
 from django.shortcuts import render
-from core.models import FarmerProfile, Feedback, MilkCollection
+from cooperative.serializers import NoticeSerializer
+from core.models import FarmerProfile, Feedback, MilkCollection, Notice
 from rest_framework import generics, viewsets
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -84,3 +85,16 @@ class FeeedbackViewset(viewsets.ModelViewSet):
             raise PermissionDenied("Only farmers can create feedback")
         
         serializer.save(farmer=farmer)
+
+# view notices
+class FarmerNoticeView(generics.ListAPIView):
+    serializer_class=NoticeSerializer
+    permission_classes=[IsAuthenticated]
+
+    def get_queryset(self):
+        notices=(
+            Notice.objects.filter(target__in=['ALL','FARMERS'])
+            .order_by('created_at')
+        )
+        return notices
+    

@@ -5,7 +5,8 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view,permission_classes
 from rest_framework.permissions import IsAuthenticated
 from collector.serializers import MilkCollectionSerializer, RecentCollectionsSerializer
-from core.models import PorterProfile , FarmerProfile, MilkCollection
+from cooperative.serializers import NoticeSerializer
+from core.models import Notice, PorterProfile , FarmerProfile, MilkCollection
 from rest_framework.response import Response
 from rest_framework import generics
 # Create your views here.
@@ -101,3 +102,16 @@ class MyCollections(generics.ListAPIView):
             .order_by('created_at')
         )
         return collection
+    
+class PorterNoticeView(generics.ListAPIView):
+    serializer_class=NoticeSerializer
+    permission_classes=[IsAuthenticated]
+
+    def get_queryset(self):
+        notices=(
+            Notice.objects.filter(target__in=['ALL','PORTERS'])
+            .order_by('created_at')
+        )
+        return notices
+    
+    
