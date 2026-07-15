@@ -26,13 +26,16 @@ SECRET_KEY = 'django-insecure-t_8pm(qh_*f$nn_m79q%nzvq6^y8m-njp$i$d&x=h3y@xxz9en
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+     'october-gloss-spoiler.ngrok-free.dev' ,
+     '127.0.0.1'
+]
 
 AUTH_USER_MODEL='core.User'
 
 # Application definition
 
-INSTALLED_APPS = [
+INSTALLED_APPS = [  
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
