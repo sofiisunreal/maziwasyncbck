@@ -13,6 +13,6 @@ urlpatterns=[
     path('dashboard/',views.AdminDashboardView.as_view()),
     path('farmers/balance/',views.farmersbalance),
     path('payfarmer/',views.pay_farmer),
-    path('callback/',views.MpesaCallback),
+    path('callback',views.MpesaCallback),
     path('',include(router.urls))
 ]

@@ -274,7 +274,7 @@ def MpesaCallback(request):
     # check if the transaction was succesful
     if result["ResultCode"]==0:
         payment.status="COMPLETED"
-        payment.transaction_ref='TransactionID'
+        payment.transaction_ref=result["TransactionID"]
     else:
         payment.status="FAILED"
 
