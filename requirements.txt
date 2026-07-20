@@ -11,3 +11,5 @@ drf_spectacular
 python-dotenv
 groq
 requests
+joblib
+numpy
