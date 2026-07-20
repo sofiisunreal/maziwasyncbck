@@ -11,12 +11,16 @@ from django.db.models import Sum
 from datetime import date
 from django.utils import timezone
 from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
+from .services import CattleAIService
+
+from farmer.services import CattleAIService
 
 # Create your views here.
 
 # farmer dashboard 
 class FarmerDashboard(APIView):
-    permission_classes=[IsAuthenticated]
+    @permission_classes([IsAuthenticated])
     def get(self,request):
         farmer=self.request.user.farmer_profile
         collection=MilkCollection.objects.filter(farmer=farmer)
@@ -98,3 +102,16 @@ class FarmerNoticeView(generics.ListAPIView):
         )
         return notices
     
+# AI 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def PredictDisease(request):
+    animal=request.data.get('Animal')
+    age=request.data.get('Age')
+    temp=request.data.get('Temperature')
+    description=request.data.get('Description')
+    print(request.data)
+    # create our ai object from the cattle ai service 
+    ai_service=CattleAIService()
+    result=ai_service.predict(animal_type=animal,age=age,temp=temp,description=description)
+    return Response(result)

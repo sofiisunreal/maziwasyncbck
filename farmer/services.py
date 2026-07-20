@@ -6,11 +6,12 @@ from dotenv import load_dotenv
 class CattleAIService:
     def __init__(self):
         # constructor that will load the ML files and initialize the Groq AI engine
-        base_dir=os.path.abspath(__file__)
+        base_dir = os.path.dirname(os.path.abspath(__file__))        
         # read keys inside local .env config gile into memory 
         load_dotenv()
         # loading our trained model 
         self.model=joblib.load(os.path.join(base_dir, 'cattle_disease_model.pkl'))
+        
 
         # loading the features /x/inputs
         self.model_features=joblib.load(os.path.join(base_dir,'model_features.pkl'))
@@ -18,7 +19,7 @@ class CattleAIService:
         # extract the symptoms from the model features 
         self.valid_symptoms=[
             f for f in self.model_features
-            if f not in ['Age','Temperature'] and not f.startwith('Animal')
+            if f not in ['Age','Temperature'] and not f.startswith('Animal')
         ]
 
         # setup and authenticate the Groq cloud connection
@@ -39,7 +40,7 @@ class CattleAIService:
                         {"role":"user","content":f"Farmer text: \"{farmer_text}\""}
                     ],
                     model="llama-3.1-8b-instant",
-                    temperater=0.0,
+                    temperature=0.0,
                     response_format={"type":"json_object"}
                 )
                 response_text=completion.choices[0].message.content.strip()
@@ -50,7 +51,7 @@ class CattleAIService:
                 print(f"Groq Extraction Error",{e})
                 return []
             
-    def get_tratment_recommendation(self,disease, animal_type):
+    def get_treatment_recommendation(self,disease, animal_type):
                 system_prompt=("""
                      You are an expert livestock verinarian, provide clear, concise and professional treatment recommendations under 120 words using short bullet points. Include a vet disclaimer.
                  """)
@@ -64,18 +65,19 @@ class CattleAIService:
                     temperature=0.3, #Higher  value allows the AI to sound more creative and natural 
                 )
                     response_text=completion.choices[0].message.content.strip()
-                    result_json=json.loads(response_text)
-                    return result_json.get('symptoms',[])
+                    # result_json=json.loads(response_text)
+                    # return result_json.get('symptoms',[])
+                    return response_text
                 except Exception as e:
                     print(f"Groq treatment Error{e}")
-                    return "Treatment temporarily unavailable"
+                    return f"Treatment temporarily unavailable {e}"
             # predict method
     def predict (self,animal_type,age,temp,description):
                 # use the LLM extraction utility to filter symptoms out of the incoming text string
                 extracted_symptoms=self.extract_symptoms_with_groq(description)                    
                 
                 # build baseline dictionary mapping all training features name to zero values 
-                input_data={feature:0 for feature in self.model}
+                input_data={feature:0 for feature in self.model_features}
                 # map raw numeric inputs to thei respective matching feature keys
                 input_data['Age']=age
                 input_data['Temperature']=temp
@@ -92,7 +94,7 @@ class CattleAIService:
                 # flatten the dictionaty into ordered list matching the exact index setup our model   expects
                 final_input_vector=[input_data[feature] for feature in self.model_features]
                 # predict using our model providing it with the ordered feature/x/input 
-                prediction=self.model.prediction([final_input_vector])
+                prediction=self.model.predict([final_input_vector])
                 predicted_disease=prediction[0]
 
                 treatment_plan=self.get_treatment_recommendation(predicted_disease,animal_type)
