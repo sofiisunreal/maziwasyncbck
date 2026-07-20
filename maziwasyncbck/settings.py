@@ -28,7 +28,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
      'october-gloss-spoiler.ngrok-free.dev' ,
-     '127.0.0.1'
+     '127.0.0.1',
+     'sophieemp.alwaysdata.net'
 ]
 
 AUTH_USER_MODEL='core.User'
