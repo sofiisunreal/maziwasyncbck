@@ -249,7 +249,7 @@ def pay_farmer(request):
         farmer=farmer,
         amount=amount,
         payment_method="MPESA",
-        status="COMPLETED",
+        status="PENDING",
         originator_conversation_id =result["OriginatorConversationID"],
         transaction_ref=result.get("ConversationID"),
         payment_date=timezone.now()
