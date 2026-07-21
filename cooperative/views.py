@@ -254,8 +254,8 @@ def pay_farmer(request):
         transaction_ref=result.get("ConversationID"),
         payment_date=timezone.now()
     )
-
-    return Response({"farmer": farmer.first_name, "balance": balance, "mpesa_response": result })
+    new_balance = balance - amount
+    return Response({"farmer": farmer.first_name, "balance": new_balance, "mpesa_response": result })
 
 # ansynchronous call back processing webhook
 @api_view(["POST"])
